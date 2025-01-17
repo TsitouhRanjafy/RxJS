@@ -1,7 +1,4 @@
-import { NumberSymbol } from '@angular/common';
 import { Component } from '@angular/core';
-import { error } from 'node:console';
-import { subscribe } from 'node:diagnostics_channel';
 
 import { Observable , Subscriber, Subscription, interval , take } from 'rxjs';
 
@@ -14,47 +11,40 @@ import { Observable , Subscriber, Subscription, interval , take } from 'rxjs';
 
 export class AppComponent {
   title = 'rxjs';
+
+  letter: string = '';
   
   constructor() {
 
     // notre observable avec sa subscriber
-    const helloWorld$ = new Observable<string>((subscriber: Subscriber<string>) => {
-      const text = "Hello Tsitohaina";
+    const helloWorld$ = new Observable<number>((subscriber: Subscriber<number>) => {
 
-      for (let i=0; i<text.length;i++){
+      for (let i=0; i<5;i++){
         setTimeout(() => {
-          subscriber.next(text[i])
+          subscriber.next(i)
         },(i+1) * 1000)
 
-        setTimeout(() => {
-          subscriber.complete();
-        }, (text.length +1 ) * 1000)
-
-        setTimeout(() =>{
-          subscriber.error();
-        },5000)
       }
+
+      setTimeout(() => {
+        subscriber.complete();
+      }, 6000)
+
     });
 
     // notre observer
     const helloObserver = {
-      next: (value: string): void => {
-        console.log(value)
+      next: (value: number): void => {
+        this.letter = value+''
       },
       complete: () =>{
-        console.log('Observation completed!');
-      },
-      error: () => {
-        console.log('error');
+        this.letter = 'message réçu';
+        console.log('Observable completed!');
         
       }
     }
     
     // la subscription
     const helloSubscription: Subscription = helloWorld$.subscribe(helloObserver); 
-
-    setTimeout(() => {
-      helloSubscription.unsubscribe()
-    },3000)
   }
 }
